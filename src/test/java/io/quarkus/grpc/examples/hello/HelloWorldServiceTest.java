@@ -35,9 +35,11 @@ class HelloWorldServiceTest {
 
     @Test
     public void testHelloWorldServiceUsingBlockingStub() {
-        GreeterGrpc.GreeterBlockingStub client = GreeterGrpc.newBlockingStub(channel);
-        HelloReply reply = client
-                .sayHello(HelloRequest.newBuilder().setName("neo-blocking").build());
-        assertThat(reply.getMessage()).isEqualTo("Hello neo-blocking");
+        GreeterGrpc.GreeterBlockingStub client = GreeterGrpc.newBlockingStub(channel).withWaitForReady();
+        for (int i = 0; i < 100; i++) {
+            HelloReply reply = client
+                    .sayHello(HelloRequest.newBuilder().setName("neo-blocking").build());
+            assertThat(reply.getMessage()).isEqualTo("Hello neo-blocking");
+        }
     }
 }
