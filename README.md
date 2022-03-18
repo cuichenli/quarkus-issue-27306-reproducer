@@ -1,4 +1,4 @@
-reproducer for https://github.com/quarkusio/quarkus/issues/23805
+reproducer for https://github.com/quarkusio/quarkus/issues/24395
 ========================
 
 Reproduce the issue: 
