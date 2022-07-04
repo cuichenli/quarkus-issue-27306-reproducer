@@ -2,6 +2,11 @@ package io.quarkus.grpc.examples.hello;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import io.opentelemetry.context.Context;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanContext;
+import org.jboss.logging.Logger;
+
 import examples.Greeter;
 import examples.HelloReply;
 import examples.HelloRequest;
@@ -17,6 +22,9 @@ public class HelloWorldService implements Greeter {
     @Override
     @Blocking
     public Uni<HelloReply> sayHello(HelloRequest request) {
+        SpanContext spanContext = Span.current().getSpanContext();
+        System.out.println("sayHello "+spanContext);
+
         int count = counter.incrementAndGet();
         String name = request.getName();
         return Uni.createFrom().item("Hello " + name)
