@@ -8,6 +8,7 @@ import examples.Greeter;
 import examples.GreeterGrpc;
 import examples.HelloReply;
 import examples.HelloRequest;
+import io.opentelemetry.api.trace.Span;
 import io.quarkus.grpc.GrpcClient;
 import io.smallrye.mutiny.Uni;
 
@@ -32,7 +33,11 @@ public class HelloWorldEndpoint {
     @Path("/mutiny/{name}")
     public Uni<String> helloMutiny(@PathParam("name") String name) {
         return helloService.sayHello(HelloRequest.newBuilder().setName(name).build())
-                .onItem().transform((reply) -> generateResponse(reply));
+                .onItem().transform((reply) -> {
+                    System.out.println("helloMutiny " + Span.current().getSpanContext().getTraceId());
+
+                    return generateResponse(reply);
+                });
     }
 
     public String generateResponse(HelloReply reply) {

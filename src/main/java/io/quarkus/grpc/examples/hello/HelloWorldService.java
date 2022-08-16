@@ -2,9 +2,9 @@ package io.quarkus.grpc.examples.hello;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.opentelemetry.context.Context;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanContext;
+import io.quarkus.grpc.GrpcClient;
 import org.jboss.logging.Logger;
 
 import examples.Greeter;
@@ -17,17 +17,30 @@ import io.smallrye.mutiny.Uni;
 @GrpcService
 public class HelloWorldService implements Greeter {
 
+    @GrpcClient("localhost")
+    Greeter svc;
+
     AtomicInteger counter = new AtomicInteger();
 
     @Override
-    @Blocking
+    // @Blocking
     public Uni<HelloReply> sayHello(HelloRequest request) {
-        SpanContext spanContext = Span.current().getSpanContext();
-        System.out.println("sayHello "+spanContext);
+        System.out.println("sayHello " + Span.current().getSpanContext().getTraceId());
+
+        if (request.getName().equals("skip")) {
+            return Uni.createFrom().item("Hello ")
+                    .map(res -> {
+                        System.out.println("skipped " + Span.current().getSpanContext().getTraceId());
+                        return HelloReply.newBuilder().setMessage(res).build();
+                    });
+        }
 
         int count = counter.incrementAndGet();
         String name = request.getName();
-        return Uni.createFrom().item("Hello " + name)
-                .map(res -> HelloReply.newBuilder().setMessage(res).setCount(count).build());
+        return svc.sayHello(HelloRequest.newBuilder().setName("skip").build())
+                .map(res -> {
+                    System.out.println("after calling sayHello " + Span.current().getSpanContext().getTraceId());
+                    return HelloReply.newBuilder().setMessage("Hello " + name).setCount(count).build();
+                });
     }
 }

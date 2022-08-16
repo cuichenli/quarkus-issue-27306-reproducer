@@ -1,4 +1,4 @@
-reproducer for https://github.com/quarkusio/quarkus/issues/24395
+reproducer for https://github.com/quarkusio/quarkus/issues/27306
 ========================
 
 Reproduce the issue: 
@@ -7,8 +7,14 @@ Reproduce the issue:
 mvn test
 ```
 
-You should see:
+You should see logs like this where `after calling sayHello` does not have trace id:
 
 ```log
-WARN  [io.qua.ope.run.QuarkusContextStorage] (executor-thread-0) Context in storage not the expected context, Scope.close was not called correctly
+server interceptor
+sayHello 80fd45bfae72bd14be3e8416dbfc9fc1
+client interceptor
+server interceptor
+sayHello 80fd45bfae72bd14be3e8416dbfc9fc1
+skipped 80fd45bfae72bd14be3e8416dbfc9fc1
+after calling sayHello 00000000000000000000000000000000
 ```
