@@ -3,15 +3,12 @@ package io.quarkus.grpc.examples.hello;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.api.trace.SpanContext;
 import io.quarkus.grpc.GrpcClient;
-import org.jboss.logging.Logger;
 
 import examples.Greeter;
 import examples.HelloReply;
 import examples.HelloRequest;
 import io.quarkus.grpc.GrpcService;
-import io.smallrye.common.annotation.Blocking;
 import io.smallrye.mutiny.Uni;
 
 @GrpcService
