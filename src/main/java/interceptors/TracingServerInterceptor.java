@@ -8,15 +8,18 @@ import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
 
 import javax.enterprise.context.ApplicationScoped;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ApplicationScoped
 @GlobalInterceptor
 @Priority(1000)
 public class TracingServerInterceptor implements ServerInterceptor {
+    public static Logger LOGGER = LoggerFactory.getLogger(TracingServerInterceptor.class);
     @Override
     public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(ServerCall<ReqT, RespT> serverCall,
                                                                  Metadata metadata, ServerCallHandler<ReqT, RespT> serverCallHandler) {
-        System.out.println("server interceptor");
+        LOGGER.info("server interceptor");
 
         return serverCallHandler.startCall(serverCall, metadata);
     }

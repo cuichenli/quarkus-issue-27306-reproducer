@@ -10,11 +10,14 @@ import examples.HelloReply;
 import examples.HelloRequest;
 import io.quarkus.grpc.GrpcService;
 import io.smallrye.mutiny.Uni;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @GrpcService
 public class HelloWorldService implements Greeter {
+    public static final org.slf4j.Logger Logger = LoggerFactory.getLogger(HelloWorldService.class);
 
-    @GrpcClient("localhost")
+    @GrpcClient("hello")
     Greeter svc;
 
     AtomicInteger counter = new AtomicInteger();
@@ -22,12 +25,12 @@ public class HelloWorldService implements Greeter {
     @Override
     // @Blocking
     public Uni<HelloReply> sayHello(HelloRequest request) {
-        System.out.println("sayHello " + Span.current().getSpanContext().getTraceId());
+        Logger.info("sayHello " + Span.current().getSpanContext().getTraceId());
 
         if (request.getName().equals("skip")) {
             return Uni.createFrom().item("Hello ")
                     .map(res -> {
-                        System.out.println("skipped " + Span.current().getSpanContext().getTraceId());
+                        Logger.info("skipped " + Span.current().getSpanContext().getTraceId());
                         return HelloReply.newBuilder().setMessage(res).build();
                     });
         }
@@ -36,7 +39,7 @@ public class HelloWorldService implements Greeter {
         String name = request.getName();
         return svc.sayHello(HelloRequest.newBuilder().setName("skip").build())
                 .map(res -> {
-                    System.out.println("after calling sayHello " + Span.current().getSpanContext().getTraceId());
+                    Logger.info("after calling sayHello " + Span.current().getSpanContext().getTraceId());
                     return HelloReply.newBuilder().setMessage("Hello " + name).setCount(count).build();
                 });
     }
